@@ -25,21 +25,33 @@
           <a class="nav-link" href="/how">How to use</a>
         </li>
 
-          <li class="nav-item">
-          <a class="nav-link" href="/contact">Contact Us</a>
-        </li>
-
         <li class="nav-item">
           <a class="nav-link disabled" aria-disabled="true">Disabled</a>
         </li>
       </ul>
       <form class="d-flex" role="search">
-        <button class="btn btn-outline-success mx-2" type="submit">Login</button>
-          <button class="btn btn-outline-success mx-2" type="submit">SignUp</button>
+        <button class="btn btn-outline-success mx-1" type="submit">Login</button>
+          <button class="btn btn-outline-success mx-1" type="submit">SignUp</button>
       </form>
     </div>
   </div>
 </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+
+    {% for category, message in messages %}
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> {{ message | safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+    {% endfor %}
+
+  {% endif %}
+{% endwith %}
 
    <div class="container ny-4">
        <h1 class="text-center fs-2">ImaEdit - Edit your Images online</h1>

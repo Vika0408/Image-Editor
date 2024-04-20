@@ -7,7 +7,9 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 
+
 app = Flask(__name__)
+app.secret_key = 'super secret key'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -15,14 +17,27 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def processimage(filename, operation) :
-    print(f"The operation is {operation} and the filename is {filename}")
+def processImage(filename, operation):
+    print(f"the operation is {operation} and filename is {filename}")
     img = cv2.imread(f"uploads/{filename}")
     match operation:
-        case "cgray" :
+        case "cgray":
             imgProcess = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            cv2.imwrite(f"static/{filename}", imgProcess)
-
+            newFilename = f"static/{filename}"
+            cv2.imwrite(newFilename, imgProcess)
+            return newFilename
+        case "cwebp":
+            newFilename = f"static/{filename.split('.')[0]}.webp"
+            cv2.imwrite(newFilename, img)
+            return newFilename
+        case "cjpg":
+            newFilename = f"static/{filename.split('.')[0]}.jpg"
+            cv2.imwrite(newFilename, img)
+            return newFilename
+        case "cpng":
+            newFilename = f"static/{filename.split('.')[0]}.png"
+            cv2.imwrite(newFilename, img)
+            return newFilename
     pass
 
 
@@ -52,8 +67,9 @@ def edit():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            processimage(filename, operation)
-            flash(f"Your image has been processed and is available <a href='/static/{filename}'>here</a>")
+            new = processImage(filename, operation)
+            flash(f"Your image has been processed and is available <a href='/{new}' target = "
+                  f"'_blank'>here</a>")
             return render_template("index.html")
 
     return render_template("index.html")
